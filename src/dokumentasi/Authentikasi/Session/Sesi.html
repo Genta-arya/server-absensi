@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Documentation - Session Check Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gradient-to-b from-gray-50 to-gray-100 text-gray-900">
+    <div class="container mx-auto p-6 md:p-10 lg:p-12">
+      <h1 class="text-5xl font-extrabold mb-6 text-center text-blue-700">API Documentation - Session Check Login</h1>
+
+      <h2 class="text-3xl font-semibold mt-6 mb-4 text-gray-800">Cek Sesi Pengguna</h2>
+      <p class="mb-2 text-gray-700">Endpoint untuk memeriksa validitas token pengguna.</p>
+
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h3 class="font-bold text-xl mt-4">POST <span class="text-blue-600">/session</span></h3>
+        <p class="mb-2 text-gray-700">Memeriksa apakah token yang diberikan masih valid atau telah kedaluwarsa.</p>
+        
+        <h4 class="font-semibold text-lg mt-4">Request Body:</h4>
+        <pre class="bg-gray-300 p-4 rounded mb-4 overflow-x-auto"><code class="text-sm">
+{
+    "token": "string"  // Token pengguna yang akan diperiksa
+}
+        </code></pre>
+
+        <h4 class="font-semibold text-lg mt-4">Response:</h4>
+        <p><strong class="text-green-600">200 OK:</strong> Jika token masih valid.</p>
+        <pre class="bg-gray-300 p-4 rounded mb-4 overflow-x-auto"><code class="text-sm">
+{
+    "message": "success",
+    "data": {
+        "id": "string",  // ID pengguna
+        "nim": "string",  // NIM pengguna
+        "name": "string | null",  // Nama pengguna (jika ada)
+        "email": "string | null",  // Email pengguna (jika ada)
+        "isLogin": true,  // Status login
+        "token": "string | null",  // Token (jika ada)
+        "avatar": "string | null",  // URL Avatar (jika ada)
+        "role": "MHS" | "DOSEN" | "ADMIN"  // Role pengguna
+    }
+}
+        </code></pre>
+
+        <p><strong class="text-yellow-600">400 Bad Request:</strong> Jika token tidak disertakan dalam permintaan.</p>
+        <pre class="bg-gray-300 p-4 rounded mb-4 overflow-x-auto"><code class="text-sm">
+{
+    "message": "Mohon lengkapi token" // Jika token tidak ada
+}
+        </code></pre>
+
+        <p><strong class="text-red-600">401 Unauthorized:</strong> Jika token tidak valid atau sudah kedaluwarsa.</p>
+        <pre class="bg-gray-300 p-4 rounded mb-4 overflow-x-auto"><code class="text-sm">
+{
+    "message": "Token tidak valid" // Jika token tidak ditemukan di database
+}
+// atau
+{
+    "message": "Token expired. Silakan login kembali." // Jika token sudah kedaluwarsa
+}
+        </code></pre>
+      </div>
+
+      <h2 class="text-3xl font-semibold mt-6 mb-4 text-gray-800">Penggunaan</h2>
+      <p class="text-gray-700">
+        Untuk memeriksa sesi login pengguna, kirimkan permintaan POST ke <code class="font-mono text-blue-600">/session</code>
+        dengan body yang berisi token pengguna.
+      </p>
+    </div>
+  </body>
+</html>

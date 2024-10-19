@@ -1,31 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Documentation</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-900">
+
+<body class="bg-gradient-to-b from-gray-50 to-gray-100 text-gray-900">
     <div class="container mx-auto p-6">
-        <h1 class="text-4xl font-bold mb-4">API Documentation</h1>
-        <p class="text-lg mb-4">Base URL untuk API:</p>
-        <pre class="bg-gray-200 p-4 rounded mb-4">https://dev-absensi.hkks.shop/api/v1/[endpoint]</pre>
-        
-        <p class="text-xl mb-4 font-bold">Daftar Endpoints:</p>
-        
-        <ul class="list-disc pl-6">
-            <li>
-                <strong>/login</strong> - Masuk ke akun pengguna.
-                <a href="/doc/login" class="text-blue-600 underline">Klik di sini untuk melihat dokumentasi Login.</a>
-            </li>
-            <li>
-                <strong>/register</strong> - Mendaftar pengguna baru. 
-                <a href="/doc/register" class="text-blue-600 underline">Klik di sini untuk melihat dokumentasi pendaftaran.</a>
-            </li>
-        </ul>
-        
-        <p class="mt-6">Silakan pilih rute di atas untuk melihat detail lebih lanjut.</p>
+        <h1 class="text-5xl font-extrabold mb-6 text-center text-blue-700">API Documentation</h1>
+        <p class="text-lg mb-6 text-center">Base URL untuk API:</p>
+        <div class="bg-blue-100 p-4 rounded mb-8 shadow-lg">
+            <pre class="text-sm md:text-lg font-mono text-blue-700">https://dev-absensi.hkks.shop/api/v1/[endpoint]</pre>
+        </div>
+
+        <!-- Header untuk Kelompok Endpoint -->
+        <div class="text-xl mb-6 font-bold text-gray-800 border-b pb-2">Endpoint Autentikasi:</div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                <div class="flex items-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14.5v7m-5-7.5v7m10-7.5v7m-10-10a5 5 0 110-10 5 5 0 010 10zm10 0a5 5 0 110-10 5 5 0 010 10z" />
+                    </svg>
+                    <h3 class="text-2xl font-semibold ml-2 text-gray-800">/login</h3>
+                </div>
+                <p class="text-sm md:text-base mb-4 text-gray-600">Masuk ke akun pengguna.</p>
+                <a href="/doc/login" class="text-blue-600 font-bold hover:underline">Klik di sini untuk melihat dokumentasi Login</a>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                <div class="flex items-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12h2a1 1 0 011 1v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4a1 1 0 011-1h2m8 0V5a1 1 0 00-1-1H7a1 1 0 00-1 1v7m10 0h-4" />
+                    </svg>
+                    <h3 class="text-2xl font-semibold ml-2 text-gray-800">/register</h3>
+                </div>
+                <p class="text-sm md:text-base mb-4 text-gray-600">Mendaftar pengguna baru.</p>
+                <a href="/doc/register" class="text-blue-600 font-bold hover:underline">Klik di sini untuk melihat dokumentasi pendaftaran</a>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                <div class="flex items-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12v2a4 4 0 00-4 4H4a4 4 0 100 8h16a4 4 0 100-8h-4a4 4 0 00-4-4zm0-12a2 2 0 00-2 2v2a6 6 0 00-6 6h4a2 2 0 012-2h8a2 2 0 012-2V2h-8z" />
+                    </svg>
+                    <h3 class="text-2xl font-semibold ml-2 text-gray-800">/session</h3>
+                </div>
+                <p class="text-sm md:text-base mb-4 text-gray-600">Melihat sesi pengguna.</p>
+                <a href="/doc/session" class="text-blue-600 font-bold hover:underline">Klik di sini untuk melihat dokumentasi sesi</a>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                <div class="flex items-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 10l5 5 5-5m-5-5v12" />
+                    </svg>
+                    <h3 class="text-2xl font-semibold ml-2 text-gray-800">/logout</h3>
+                </div>
+                <p class="text-sm md:text-base mb-4 text-gray-600">Keluar dari akun pengguna.</p>
+                <a href="/doc/logout" class="text-blue-600 font-bold hover:underline">Klik di sini untuk melihat dokumentasi logout</a>
+            </div>
+        </div>
+
+        <p class="mt-8 text-center text-gray-700">Silakan pilih rute di atas untuk melihat detail lebih lanjut.</p>
     </div>
 </body>
+
 </html>

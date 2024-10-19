@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Documentation - Logout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gradient-to-b from-gray-50 to-gray-100 text-gray-900">
+    <div class="container mx-auto p-6 md:p-10 lg:p-12">
+      <h1 class="text-5xl font-extrabold mb-6 text-center text-blue-700">API Documentation - Logout</h1>
+
+      <h2 class="text-3xl font-semibold mt-6 mb-4 text-gray-800">Logout Pengguna</h2>
+      <p class="mb-2 text-gray-700">Endpoint untuk mengeluarkan pengguna dari sesi aktif.</p>
+
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h3 class="font-bold text-xl mt-4">POST <span class="text-blue-600">/logout</span></h3>
+        <p class="mb-2 text-gray-700">Mengeluarkan pengguna dengan ID yang diberikan.</p>
+        
+        <h4 class="font-semibold text-lg mt-4">Request Body:</h4>
+        <pre class="bg-gray-300 p-4 rounded mb-4 overflow-x-auto"><code class="text-sm">
+{
+    "id": "string"  // ID pengguna yang akan dikeluarkan
+}
+        </code></pre>
+
+        <h4 class="font-semibold text-lg mt-4">Response:</h4>
+        <p><strong class="text-green-600">200 OK:</strong> Jika logout berhasil.</p>
+        <pre class="bg-gray-300 p-4 rounded mb-4 overflow-x-auto"><code class="text-sm">
+{
+    "message": "Berhasil logout"
+}
+        </code></pre>
+
+        <p><strong class="text-yellow-600">400 Bad Request:</strong> Jika ID tidak disertakan dalam permintaan.</p>
+        <pre class="bg-gray-300 p-4 rounded mb-4 overflow-x-auto"><code class="text-sm">
+{
+    "message": "Mohon lengkapi id" // Jika ID tidak ada
+}
+        </code></pre>
+
+        <p><strong class="text-red-600">404 Not Found:</strong> Jika pengguna dengan ID tersebut tidak ditemukan.</p>
+        <pre class="bg-gray-300 p-4 rounded mb-4 overflow-x-auto"><code class="text-sm">
+{
+    "message": "User not found" // Jika ID tidak valid
+}
+        </code></pre>
+      </div>
+
+      <h2 class="text-3xl font-semibold mt-6 mb-4 text-gray-800">Penggunaan</h2>
+      <p class="text-gray-700">
+        Untuk mengeluarkan pengguna, kirimkan permintaan POST ke <code class="font-mono text-blue-600">/logout</code>
+        dengan body yang berisi ID pengguna yang akan dikeluarkan.
+      </p>
+    </div>
+  </body>
+</html>

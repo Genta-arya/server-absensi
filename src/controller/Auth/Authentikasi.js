@@ -166,7 +166,7 @@ export const getLogin = async (req, res) => {
       // Jika token kedaluwarsa, set token di database menjadi null
       await prisma.user.updateMany({
         where: { token },
-        data: { token: null },
+        data: { token: null, isLogin: false },
       });
 
       return sendResponse(res, 401, "Token expired. Silakan login kembali.");
@@ -197,6 +197,34 @@ export const getLogin = async (req, res) => {
 
     // Jika token masih valid, kembalikan data pengguna
     return sendResponse(res, 200, "succes", user);
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const handleLogout = async (req, res) => {
+  const { id } = req.body;
+
+  if (!id) {
+    return sendResponse(res, 400, "Mohon lengkapi id");
+  }
+
+  // check apakah id ada di database
+  const user = await prisma.user.findUnique({
+    where: { id },
+  });
+
+  if (!user) {
+    return sendResponse(res, 404, "User not found");
+  }
+
+  try {
+    await prisma.user.updateMany({
+      where: { id },
+      data: { token: null, isLogin: false },
+    });
+
+    return sendResponse(res, 200, "Berhasil logout");
   } catch (error) {
     handleError(res, error);
   }

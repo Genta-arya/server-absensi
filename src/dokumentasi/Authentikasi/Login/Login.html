@@ -6,25 +6,28 @@
     <title>API Documentation - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 text-gray-900">
-    <div class="container mx-auto p-6">
-      <h1 class="text-4xl font-bold mb-4">API Documentation - Login</h1>
+  <body class="bg-gradient-to-b from-gray-50 to-gray-100 text-gray-900">
+    <div class="container mx-auto p-6 md:p-10 lg:p-12">
+      <h1 class="text-5xl font-extrabold mb-6 text-center text-blue-700">API Documentation - Login</h1>
 
-      <h2 class="text-2xl font-semibold mt-6 mb-4">Login Pengguna</h2>
-      <p class="mb-2">Endpoint untuk login pengguna dengan menggunakan NIM dan password.</p>
-      <h3 class="font-bold">POST /login</h3>
-      <p class="mb-2">Login pengguna dengan memberikan data berikut:</p>
-      <h4 class="font-semibold">Request Body:</h4>
-      <pre class="bg-gray-200 p-4 rounded">
+      <h2 class="text-3xl font-semibold mt-6 mb-4 text-gray-800">Login Pengguna</h2>
+      <p class="mb-2 text-gray-700">Endpoint untuk login pengguna dengan menggunakan NIM dan password.</p>
+
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h3 class="font-bold text-xl mt-4">POST <span class="text-blue-600">/login</span></h3>
+        <p class="mb-2 text-gray-700">Login pengguna dengan memberikan data berikut:</p>
+        
+        <h4 class="font-semibold text-lg mt-4">Request Body:</h4>
+        <pre class="bg-gray-300 p-4 rounded mb-4 overflow-x-auto"><code class="text-sm">
 {
     "nim": "string",  // NIM pengguna
     "password": "string"  // Password pengguna
 }
-      </pre>
-      
-      <h4 class="font-semibold">Response:</h4>
-      <p><strong>200 OK:</strong> Jika login berhasil.</p>
-      <pre class="bg-gray-200 p-4 rounded">
+        </code></pre>
+
+        <h4 class="font-semibold text-lg mt-4">Response:</h4>
+        <p><strong class="text-green-600">200 OK:</strong> Jika login berhasil.</p>
+        <pre class="bg-gray-300 p-4 rounded mb-4 overflow-x-auto"><code class="text-sm">
 {
     "message": "Login berhasil",
     "data": {
@@ -41,10 +44,10 @@
         "token": "string"  // Token JWT untuk autentikasi selanjutnya
     }
 }
-      </pre>
+        </code></pre>
 
-      <p><strong>400 Bad Request:</strong> Jika kolom NIM atau password tidak lengkap.</p>
-      <pre class="bg-gray-200 p-4 rounded">
+        <p><strong class="text-yellow-600">400 Bad Request:</strong> Jika kolom NIM atau password tidak lengkap.</p>
+        <pre class="bg-gray-300 p-4 rounded mb-4 overflow-x-auto"><code class="text-sm">
 {
     "message": "Mohon lengkapi nim" // Jika NIM kosong
 }
@@ -52,18 +55,19 @@
 {
     "message": "Mohon lengkapi password" // Jika password kosong
 }
-      </pre>
+        </code></pre>
 
-      <p><strong>401 Unauthorized:</strong> Jika NIM atau password tidak sesuai.</p>
-      <pre class="bg-gray-200 p-4 rounded">
+        <p><strong class="text-red-600">401 Unauthorized:</strong> Jika NIM atau password tidak sesuai.</p>
+        <pre class="bg-gray-300 p-4 rounded mb-4 overflow-x-auto"><code class="text-sm">
 {
     "message": "NIM atau password salah"
 }
-      </pre>
+        </code></pre>
+      </div>
 
-      <h2 class="text-2xl font-semibold mt-6 mb-4">Penggunaan</h2>
-      <p>
-        Untuk login, kirimkan permintaan POST ke <code>/login</code> dengan body sesuai dengan yang dijelaskan di atas.
+      <h2 class="text-3xl font-semibold mt-6 mb-4 text-gray-800">Penggunaan</h2>
+      <p class="text-gray-700">
+        Untuk login, kirimkan permintaan POST ke <code class="font-mono text-blue-600">/login</code> dengan body sesuai dengan yang dijelaskan di atas.
         Jika login berhasil, respons akan berisi token JWT yang bisa digunakan untuk autentikasi pada permintaan berikutnya.
       </p>
     </div>
