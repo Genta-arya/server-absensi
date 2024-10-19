@@ -41,7 +41,7 @@ export const handleRegister = async (req, res) => {
     return sendResponse(
       res,
       400,
-      "Role tidak valid. Pilih antara MHS, DOSEN, atau ADMIN."
+      "Role tidak valid. Pilih antara MHS atau DOSEN."
     );
   }
 
