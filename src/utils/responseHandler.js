@@ -4,7 +4,7 @@ export const sendResponse = (res, statusCode, message, data = null) => {
       message,
     };
   
-    // Jika data tidak null, tambahkan ke respons
+    
     if (data) {
       responsePayload.data = data;
     }

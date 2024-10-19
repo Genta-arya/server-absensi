@@ -23,8 +23,11 @@ app.get("/doc", (req, res) => {
 app.get("/doc/register", (req, res) => {
     res.sendFile(path.resolve("src/dokumentasi/Authentikasi/Register/Register.html")); 
   });
-
+  app.get("/doc/login", (req, res) => {
+    res.sendFile(path.resolve("src/dokumentasi/Authentikasi/Login/Login.html"));
+  });
 app.use("/api/v1", AuthRouter);
 httpServer.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
+

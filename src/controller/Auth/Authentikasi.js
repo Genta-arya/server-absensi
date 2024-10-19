@@ -3,6 +3,7 @@ import { handleError } from "../../utils/errorHandler.js";
 import bcrypt from "bcryptjs";
 import { isValidRole } from "../../utils/roleValidator.js";
 import { sendResponse } from "../../utils/responseHandler.js"; // Import utilitas baru
+import { createToken } from "../../utils/createToken.js";
 
 export const handleRegister = async (req, res) => {
   const { nim, password, role } = req.body;
@@ -64,11 +65,59 @@ export const handleRegister = async (req, res) => {
   }
 };
 
+export const handleLogin = async (req, res) => {
+  const { nim, password } = req.body;
 
-export const handleLogin = async (req, res) => { 
-    try {
-        
-    } catch (error) {
-        handleError(res, error);
+  // Validasi input NIM dan password
+  if (!nim) {
+    return sendResponse(res, 400, "Mohon lengkapi nim");
+  }
+
+  if (!password) {
+    return sendResponse(res, 400, "Mohon lengkapi password");
+  }
+
+  try {
+    // Cek apakah pengguna dengan NIM tersebut ada
+    const user = await prisma.user.findUnique({
+      where: { nim },
+    });
+
+    // Jika pengguna tidak ditemukan, kirim respons error
+    if (!user) {
+      return sendResponse(res, 404, "NIM atau password salah");
     }
-}
+
+    // Verifikasi password yang diinput dengan yang ada di database
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    // Jika password tidak valid, kirim respons error
+    if (!isPasswordValid) {
+      return sendResponse(res, 401, "NIM atau password salah");
+    }
+
+    // Buat token JWT untuk autentikasi
+    const token = createToken({ nim: user.nim, role: user.role });
+
+    // check user already token exist
+    if (user.token) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { isLogin: true },
+      });
+    } else {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { token, isLogin: true },
+      });
+    }
+
+    // Hapus properti password dari objek user sebelum mengirim respons
+    const { password: _, ...userWithoutPassword } = user;
+
+    // Kirim respons sukses dengan data pengguna dan token
+    return sendResponse(res, 200, "Login berhasil", userWithoutPassword);
+  } catch (error) {
+    handleError(res, error);
+  }
+};
