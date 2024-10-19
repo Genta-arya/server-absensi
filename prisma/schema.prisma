@@ -16,10 +16,17 @@ datasource db {
 model User {
   id       String  @id @default(uuid())
   nim      String  @unique
-  name     String
-  email    String  @unique
+  name     String?
+  email    String?  @unique
   password String
   isLogin  Boolean @default(false)
   token    String?
   avatar   String?
+  role     Role @default(MHS)
+}
+
+enum Role {
+  MHS
+  DOSEN
+  ADMIN
 }
