@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { isValidRole } from "../../utils/roleValidator.js";
 import { sendResponse } from "../../utils/responseHandler.js"; // Import utilitas baru
 import { createToken } from "../../utils/createToken.js";
-
+import jwt from "jsonwebtoken";
 export const handleRegister = async (req, res) => {
   const { nim, password, role } = req.body;
 
@@ -59,7 +59,7 @@ export const handleRegister = async (req, res) => {
     });
 
     // Kirim respons sukses dengan data pengguna baru
-    return sendResponse(res, 201, "Pendaftaran berhasil", newUser);
+    return sendResponse(res, 201, "Pendaftaran berhasil");
   } catch (error) {
     handleError(res, error);
   }
@@ -100,7 +100,7 @@ export const handleLogin = async (req, res) => {
     const token = createToken({ nim: user.nim, role: user.role });
 
     // cek apakah pengguna sudah punya token
-    if (user.token ) {
+    if (user.token) {
       await prisma.user.update({
         where: { id: user.id },
         data: { isLogin: true },
@@ -125,12 +125,78 @@ export const handleLogin = async (req, res) => {
         avatar: true,
         role: true,
       },
-    })
-
- 
+    });
 
     // Kirim respons sukses dengan data pengguna dan token
     return sendResponse(res, 200, "Login berhasil", getUser);
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+export const getLogin = async (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return sendResponse(res, 400, "Mohon lengkapi token");
+  }
+
+  // Fungsi untuk memeriksa apakah token sudah kedaluwarsa
+  const isTokenExpired = (token) => {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_KEY);
+      const currentTime = Date.now() / 1000;
+      return decoded.exp <= currentTime; // Jika expired, return true
+    } catch (error) {
+      return true; // Anggap token tidak valid jika ada error saat verifikasi
+    }
+  };
+
+  // Periksa apakah token kedaluwarsa
+  if (isTokenExpired(token)) {
+    try {
+      // Cek apakah token ada di database
+      const user = await prisma.user.findFirst({
+        where: { token },
+      });
+
+      // Jika tidak ditemukan, kirimkan respons 401 dengan pesan token tidak valid
+      if (!user) {
+        return sendResponse(res, 401, "Token tidak valid");
+      }
+
+      // Jika token kedaluwarsa, set token di database menjadi null
+      await prisma.user.updateMany({
+        where: { token },
+        data: { token: null },
+      });
+
+      return sendResponse(res, 401, "Token expired. Silakan login kembali.");
+    } catch (error) {
+      return handleError(res, error);
+    }
+  }
+
+  try {
+    // Cek apakah token ada di database
+    const user = await prisma.user.findFirst({
+      where: { token },
+      select: {
+        id: true,
+        nim: true,
+        name: true,
+        email: true,
+        isLogin: true,
+        token: true,
+        avatar: true,
+        role: true,
+      },
+    });
+
+    if (!user) {
+      return sendResponse(res, 401, "Token tidak valid");
+    }
+
+    // Jika token masih valid, kembalikan data pengguna
+    return sendResponse(res, 200, "succes", user);
   } catch (error) {
     handleError(res, error);
   }
