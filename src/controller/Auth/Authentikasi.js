@@ -63,3 +63,12 @@ export const handleRegister = async (req, res) => {
     handleError(res, error);
   }
 };
+
+
+export const handleLogin = async (req, res) => { 
+    try {
+        
+    } catch (error) {
+        handleError(res, error);
+    }
+}
