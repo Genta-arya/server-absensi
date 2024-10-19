@@ -99,8 +99,8 @@ export const handleLogin = async (req, res) => {
     // Buat token JWT untuk autentikasi
     const token = createToken({ nim: user.nim, role: user.role });
 
-    // check user already token exist
-    if (user.token) {
+    // cek apakah pengguna sudah punya token
+    if (user.token ) {
       await prisma.user.update({
         where: { id: user.id },
         data: { isLogin: true },
@@ -112,11 +112,25 @@ export const handleLogin = async (req, res) => {
       });
     }
 
-    // Hapus properti password dari objek user sebelum mengirim respons
-    const { password: _, ...userWithoutPassword } = user;
+    // AMBIL kembali data user setelah update
+    const getUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: {
+        id: true,
+        nim: true,
+        name: true,
+        email: true,
+        isLogin: true,
+        token: true,
+        avatar: true,
+        role: true,
+      },
+    })
+
+ 
 
     // Kirim respons sukses dengan data pengguna dan token
-    return sendResponse(res, 200, "Login berhasil", userWithoutPassword);
+    return sendResponse(res, 200, "Login berhasil", getUser);
   } catch (error) {
     handleError(res, error);
   }
