@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,15 +8,29 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(uuid())
-  nim      String  @unique
-  name     String?
-  email    String? @unique
-  password String
-  isLogin  Boolean @default(false)
-  token    String?
-  avatar   String? @default("https://cdn-icons-png.flaticon.com/512/3135/3135715.png")
-  role     Role    @default(MHS)
+  id              String     @id @default(uuid())
+  nim             String     @unique
+  name            String?
+  email           String?    @unique
+  password        String
+  isLogin         Boolean    @default(false)
+  token           String?
+  avatar          String?    @default("https://cdn-icons-png.flaticon.com/512/3135/3135715.png")
+  role            Role       @default(MHS)
+  kegiatan        Kegiatan[] @relation("KegiatanMahasiswa")
+  createdKegiatan Kegiatan[] @relation("KegiatanCreator")
+}
+
+model Kegiatan {
+  id           String   @id @default(uuid())
+  Kd_kegiatan  String   @unique
+  nama         String
+  deskripsi    String
+  waktumulai   DateTime
+  waktuselesai DateTime
+  creatorId    String
+  creator      User     @relation("KegiatanCreator", fields: [creatorId], references: [id])
+  mahasiswa    User[]   @relation("KegiatanMahasiswa")
 }
 
 enum Role {
