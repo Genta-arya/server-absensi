@@ -17,12 +17,12 @@ model User {
   id       String  @id @default(uuid())
   nim      String  @unique
   name     String?
-  email    String?  @unique
+  email    String? @unique
   password String
   isLogin  Boolean @default(false)
   token    String?
-  avatar   String?
-  role     Role @default(MHS)
+  avatar   String? @default("https://cdn-icons-png.flaticon.com/512/3135/3135715.png")
+  role     Role    @default(MHS)
 }
 
 enum Role {

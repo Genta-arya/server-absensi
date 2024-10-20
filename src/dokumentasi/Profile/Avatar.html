@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - Update Avatar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-gray-50 to-gray-100 text-gray-900">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-extrabold mb-6 text-center text-blue-700">API Documentation</h1>
+        <h2 class="text-3xl font-bold mb-4 text-gray-800">Update Avatar</h2>
+
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-2xl font-semibold mb-2 text-gray-800">Endpoint:</h3>
+            <pre class="bg-gray-100 p-4 rounded text-blue-600 font-mono overflow-x-auto">PUT /api/v1/profile/avatar/:id</pre>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-2xl font-semibold mb-2 text-gray-800">Deskripsi:</h3>
+            <p class="text-gray-600">Endpoint ini digunakan untuk memperbarui foto profil pengguna. Mengharuskan pengguna untuk mengupload file gambar sebagai avatar baru.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-2xl font-semibold mb-2 text-gray-800">Parameter:</h3>
+            <ul class="list-disc list-inside text-gray-600">
+                <li><strong>id (path parameter):</strong> ID pengguna yang foto profilnya akan diperbarui.</li>
+            </ul>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-2xl font-semibold mb-2 text-gray-800">Request Body:</h3>
+            <p class="text-gray-600">Menggunakan Form Data untuk mengupload file gambar.</p>
+            <pre class="bg-gray-100 p-4 rounded text-blue-600 font-mono overflow-x-auto">{
+    "avatar": "file (gambar)"
+}</pre>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-2xl font-semibold mb-2 text-gray-800">Response:</h3>
+            <pre class="bg-gray-100 p-4 rounded text-blue-600 font-mono overflow-x-auto">{
+    "message": "Avatar updated successfully.",
+    "avatar": "URL avatar baru"
+}</pre>
+            <p class="text-gray-600">Jika terjadi kesalahan, response akan memberikan pesan kesalahan yang sesuai.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h3 class="text-2xl font-semibold mb-2 text-gray-800">Contoh Penggunaan:</h3>
+            <pre class="bg-gray-100 p-4 rounded text-blue-600 font-mono overflow-x-auto">curl -X POST \
+    -F "avatar=@/path/to/your/image.jpg" \
+    https://dev-absensi.hkks.shop/api/v1/profile/avatar/123</pre>
+        </div>
+
+        <p class="text-center text-gray-700 mt-8">Silakan gunakan endpoint di atas untuk memperbarui avatar pengguna Anda.</p>
+    </div>
+</body>
+</html>

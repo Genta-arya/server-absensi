@@ -50,11 +50,12 @@ export const handleRegister = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10); // 10 adalah jumlah salt rounds
 
     // Buat pengguna baru
-    const newUser = await prisma.user.create({
+    await prisma.user.create({
       data: {
         nim,
         password: hashedPassword, // Simpan password yang telah dienkripsi
         role,
+        avatar: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
       },
     });
 
