@@ -230,3 +230,23 @@ export const handleLogout = async (req, res) => {
     handleError(res, error);
   }
 };
+
+export const getAlluser = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      where: { role: "MHS" },
+      select: {
+        id: true,
+        nim: true,
+        name: true,
+        email: true,
+        avatar: true,
+        role: true,
+        kegiatan: true,
+      },
+    });
+    return sendResponse(res, 200, "succes", users);
+  } catch (error) {
+    handleError(res, error);
+  }
+};

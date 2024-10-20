@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getAlluser,
   getLogin,
   handleLogin,
   handleLogout,
@@ -9,6 +10,7 @@ import {
 const AuthRouter = express.Router();
 AuthRouter.post("/register", handleRegister);
 AuthRouter.post("/login", handleLogin);
+AuthRouter.get("/user", getAlluser);
 AuthRouter.post("/session", getLogin);
 AuthRouter.post("/logout", handleLogout);
 

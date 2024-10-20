@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import path from "path";
 import AuthRouter from "./src/route/Auth/AuthRoutes.js";
 import { ProfileRoutes } from "./src/route/Profile/ProfileRoutes.js";
+import { KegiatanRoutes } from "./src/route/Kegiatan/KegiatanRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -54,6 +55,9 @@ app.use("/api/v1", AuthRouter);
 
 // Profile
 app.use("/api/v1", ProfileRoutes);
+
+// Kegiatan
+app.use("/api/v1", KegiatanRoutes);
 
 httpServer.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
