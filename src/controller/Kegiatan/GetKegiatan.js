@@ -61,7 +61,17 @@ export const getGrups = async (req, res) => {
           select: {
             id: true,
             nama_grup: true,
+            mahasiswa:{
+              select:{
+                id:true,
+                nim:true,
+                name:true,
+                email:true,
+                avatar:true
+              }
+            }
           },
+
         },
       },
     });
