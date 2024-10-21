@@ -242,7 +242,7 @@ export const getAlluser = async (req, res) => {
         email: true,
         avatar: true,
         role: true,
-        kegiatan: true,
+        Group: true
       },
     });
     return sendResponse(res, 200, "succes", users);

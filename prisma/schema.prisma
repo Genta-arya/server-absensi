@@ -8,29 +8,46 @@ datasource db {
 }
 
 model User {
-  id              String     @id @default(uuid())
-  nim             String     @unique
+  id              String          @id @default(uuid())
+  nim             String          @unique
   name            String?
-  email           String?    @unique
+  email           String?         @unique
   password        String
-  isLogin         Boolean    @default(false)
+  isLogin         Boolean         @default(false)
   token           String?
-  avatar          String?    @default("https://cdn-icons-png.flaticon.com/512/3135/3135715.png")
-  role            Role       @default(MHS)
-  kegiatan        Kegiatan[] @relation("KegiatanMahasiswa")
-  createdKegiatan Kegiatan[] @relation("KegiatanCreator")
+  avatar          String?         @default("https://cdn-icons-png.flaticon.com/512/3135/3135715.png")
+  role            Role            @default(MHS)
+  Group           GroupKegiatan[] @relation("GroupMahasiswa")
+  createdKegiatan Kegiatan[]      @relation("KegiatanCreator")
+   agendas         Agenda[]        @relation("MahasiswaAgendas")
 }
 
 model Kegiatan {
-  id           String   @id @default(uuid())
-  Kd_kegiatan  String   @unique
+  id           String           @id @default(uuid())
+  Kd_kegiatan  String           @unique
   nama         String
   deskripsi    String
   waktumulai   DateTime
   waktuselesai DateTime
   creatorId    String
-  creator      User     @relation("KegiatanCreator", fields: [creatorId], references: [id])
-  mahasiswa    User[]   @relation("KegiatanMahasiswa")
+  visible      Boolean          @default(true)
+  creator      User             @relation("KegiatanCreator", fields: [creatorId], references: [id])
+  groups       GroupKegiatan[]  @relation("KegiatanGroups")
+}
+
+model GroupKegiatan {
+  id        String     @id @default(uuid())
+  nama_grup String     @unique
+  mahasiswa User[]     @relation("GroupMahasiswa")
+  kegiatan  Kegiatan[] @relation("KegiatanGroups")
+  Agenda    Agenda[]   @relation("AgendaGroups")
+}
+
+model Agenda {
+  id        String     @id @default(uuid())
+  
+  Groups  GroupKegiatan[] @relation("AgendaGroups")
+  mahasiswa User[]           @relation("MahasiswaAgendas")
 }
 
 enum Role {
