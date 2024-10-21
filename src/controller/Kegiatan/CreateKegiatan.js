@@ -76,7 +76,7 @@ export const addMahasiswaGroup= async (req, res) => {
   // Cek apakah kegiatan ada
   const kegiatan = await prisma.groupKegiatan.findUnique({
     where: { id },
-   
+    include: { mahasiswa: true }, // Termasuk mahasiswa yang terhubung
   });
 
   if (!kegiatan) {
