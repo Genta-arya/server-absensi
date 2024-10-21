@@ -50,7 +50,7 @@ export const getGrups = async (req, res) => {
   });
 
   if (!data) {
-    return sendResponse(res, 404, "Group tidak ditemukan");
+    return sendResponse(res, 404, "Kegiatan tidak ditemukan");
   }
   try {
     // ambil yang visbile true
