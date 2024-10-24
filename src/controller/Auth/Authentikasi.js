@@ -189,6 +189,30 @@ export const getLogin = async (req, res) => {
         token: true,
         avatar: true,
         role: true,
+        Group: {
+          select: {
+            id: true,
+            nama_grup: true,
+            kegiatan: {
+              select: {
+                id: true,
+                nama: true,
+                Kd_kegiatan: true,
+                creator: {
+                  select: {
+                    id: true,
+                    name: true,
+                    avatar: true,
+                  }
+                },
+                deskripsi: true,
+                waktumulai: true,
+                waktuselesai: true
+
+              }
+            }
+          }
+        }
       },
     });
 
