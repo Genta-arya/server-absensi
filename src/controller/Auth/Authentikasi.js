@@ -274,3 +274,4 @@ export const getAlluser = async (req, res) => {
     handleError(res, error);
   }
 };
+
