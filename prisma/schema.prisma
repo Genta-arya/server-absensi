@@ -44,6 +44,8 @@ model GroupKegiatan {
   Agenda     Agenda[] @relation("AgendaGroups")
 }
 
+
+
 model Agenda {
   id String @id @default(uuid())
 
