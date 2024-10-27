@@ -26,7 +26,7 @@ model Kegiatan {
   id           String          @id @default(uuid())
   Kd_kegiatan  String          @unique
   nama         String
-  deskripsi    String @db.Text
+  deskripsi    String  @db.Text 
   waktumulai   DateTime
   waktuselesai DateTime
   creatorId    String
