@@ -19,14 +19,14 @@ model User {
   role            Role            @default(MHS)
   Group           GroupKegiatan[] @relation("GroupMahasiswa")
   createdKegiatan Kegiatan[]      @relation("KegiatanCreator")
-  agendas         Agenda[]        @relation("MahasiswaAgendas")
+  FormAgenda      FormAgenda[]
 }
 
 model Kegiatan {
   id           String          @id @default(uuid())
   Kd_kegiatan  String          @unique
   nama         String
-  deskripsi    String  @db.Text 
+  deskripsi    String          @db.Text
   waktumulai   DateTime
   waktuselesai DateTime
   creatorId    String
@@ -44,13 +44,32 @@ model GroupKegiatan {
   Agenda     Agenda[] @relation("AgendaGroups")
 }
 
-
-
 model Agenda {
-  id String @id @default(uuid())
+  id         String        @id @default(uuid())
+  createdId  String
+  groupId    String
+  deskripsi  String?       @db.Text
+  idUser     String?
+  status     Boolean       @default(false)
+  nama       String
+  group      GroupKegiatan @relation("AgendaGroups", fields: [groupId], references: [id])
+  FormAgenda FormAgenda[]
+}
 
-  Groups    GroupKegiatan[] @relation("AgendaGroups")
-  mahasiswa User[]          @relation("MahasiswaAgendas")
+model FormAgenda {
+  id        String   @id @default(uuid())
+  agendaId  String
+  mhsId     String
+  status    Boolean  @default(false)
+  detail    String   @db.Text
+  gps       String
+  tanggal   DateTime
+  gambar1   String
+  gambar2   String
+  agenda    Agenda   @relation(fields: [agendaId], references: [id])
+  mahasiswa User     @relation(fields: [mhsId], references: [id])
+
+  @@unique([agendaId, mhsId])
 }
 
 enum Role {
