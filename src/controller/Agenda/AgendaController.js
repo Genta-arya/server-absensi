@@ -48,6 +48,7 @@ export const createAgenda = async (req, res) => {
       data: {
         nama: name,
         createdId: id,
+        deskripsi: deskripsi,
         groupId: grupId,
       },
     });
