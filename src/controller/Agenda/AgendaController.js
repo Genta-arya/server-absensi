@@ -63,15 +63,29 @@ export const getAgendaByGroup = async (req, res) => {
 
   // Validasi input
 
- 
   if (!groupId || !userId) {
     return res.status(400).json({ message: "Group ID & user ID harus diisi." });
   }
 
   try {
-    // Periksa apakah grup kegiatan dengan ID tersebut ada
+    // Periksa apakah grup kegiatan dengan ID tersebut ada dan creator bisakan mengaksesnya
+
+    // ambil creator grup 
+
+    const groupCreator = await prisma.kegiatan.findFirst({
+      where: { groups: { some: { id: groupId } } },
+      select : {
+        creatorId : true
+      }
+     
+    });
+
+
+
+
+
     const group = await prisma.groupKegiatan.findUnique({
-      where: { id: groupId },
+      where: { id: groupId , creatorId : groupCreator.creatorId },
       include: {
         mahasiswa: {
           where: { id: userId },
@@ -86,7 +100,9 @@ export const getAgendaByGroup = async (req, res) => {
     }
 
     if (group.mahasiswa.length === 0) {
-        return res.status(403).json({ message: "Anda tidak berhak mengakses agenda grup ini." });
+      return res
+        .status(403)
+        .json({ message: "Anda tidak berhak mengakses agenda grup ini." });
     }
 
     // Dapatkan agenda berdasarkan groupId DAN TAMPILKAN JUGA NAMA GRUP NYA DI IDGRUP DI TABLE grup
@@ -95,8 +111,6 @@ export const getAgendaByGroup = async (req, res) => {
       include: { group: true },
     });
     // Periksa apakah ada agenda yang dibuat oleh user ini
-   
-
 
     res.status(200).json({
       message: "Daftar agenda berhasil diambil.",
@@ -107,5 +121,83 @@ export const getAgendaByGroup = async (req, res) => {
     res
       .status(500)
       .json({ message: "Terjadi kesalahan saat mengambil agenda." });
+  }
+};
+
+export const ambilAgenda = async (req, res) => {
+  const { idAgenda, idUser, status = true } = req.body;
+  console.log(idAgenda, idUser, status);
+  // validate
+  if (!idAgenda) {
+    return sendResponse(res, 400, "Mohon lengkapi idAgenda");
+  }
+  if (!idUser) {
+    return sendResponse(res, 400, "Mohon lengkapi idUser");
+  }
+
+  try {
+    // check id agenda
+    const agenda = await prisma.agenda.findFirst({
+      where: { id: idAgenda },
+    });
+
+    // check id user
+    const user = await prisma.user.findFirst({
+      where: { id: idUser },
+    });
+
+    if (!agenda) {
+      return sendResponse(res, 400, "Id agenda tidak ditemukan");
+    }
+
+    if (!user) {
+      return sendResponse(res, 400, "Id user tidak ditemukan");
+    }
+    // cek agenda hanya bisa diambil 1 m
+    const form = await prisma.agenda.findFirst({
+      where: {
+        idUser: idUser,
+        groupId: agenda.groupId,
+      },
+    });
+
+    if (form) {
+      return sendResponse(
+        res,
+        400,
+        "Tidak boleh mengambil agenda lebih dari 1"
+      );
+    } else {
+      await prisma.agenda.update({
+        where: { id: idAgenda },
+        data: {
+          status: status,
+          idUser: idUser,
+        },
+      });
+    }
+
+    // create data form  cek 1 agenda hanya bisa 1 mahasiswa
+    const checkForm = await prisma.formAgenda.findFirst({
+      where: {
+        agendaId: idAgenda,
+        mhsId: idUser,
+      },
+    });
+
+    if (checkForm) {
+      return sendResponse(res, 400, "Agenda sudah digunakan");
+    } else {
+      await prisma.formAgenda.create({
+        data: {
+          agendaId: idAgenda,
+          mhsId: idUser,
+        },
+      });
+    }
+
+    return sendResponse(res, 200, "Agenda berhasil diambil");
+  } catch (error) {
+    handleError(res, error);
   }
 };
