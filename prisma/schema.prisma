@@ -41,6 +41,7 @@ model GroupKegiatan {
   mahasiswa  User[]   @relation("GroupMahasiswa")
   kegiatan   Kegiatan @relation("KegiatanGroups", fields: [kegiatanId], references: [id])
   kegiatanId String
+  creatorId String
   Agenda     Agenda[] @relation("AgendaGroups")
 }
 
@@ -67,7 +68,7 @@ model FormAgenda {
   gambar1   String?
   gambar2   String?
   gambar1_b64 String? @db.Text
-    gambar2_b64 String? @db.Text
+  gambar2_b64 String? @db.Text
   agenda    Agenda?   @relation(fields: [agendaId], references: [id])
   mahasiswa User?     @relation(fields: [mhsId], references: [id])
 

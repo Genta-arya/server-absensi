@@ -59,12 +59,12 @@ export const createAgenda = async (req, res) => {
 };
 
 export const getAgendaByGroup = async (req, res) => {
-  const { groupId, userId } = req.body;
+  const { groupId, userId, creatorId } = req.body;
 
   // Validasi input
 
-  if (!groupId || !userId) {
-    return res.status(400).json({ message: "Group ID & user ID harus diisi." });
+  if (!groupId || !userId ) {
+    return res.status(400).json({ message: "Group ID, user ID, dan creator ID harus diisi." });
   }
 
   try {
@@ -72,34 +72,43 @@ export const getAgendaByGroup = async (req, res) => {
 
     // ambil creator grup 
 
-    const groupCreator = await prisma.kegiatan.findFirst({
-      where: { groups: { some: { id: groupId } } },
-      select : {
-        creatorId : true
-      }
-     
+
+
+
+
+
+// JIKA ADA CREATOR ID NYA MAKA  PAKE DI WHERE
+ let grup ;
+if (creatorId) {
+    grup = await prisma.groupKegiatan.findFirst({
+      where: { id: groupId, AND: { creatorId: creatorId } },
+      
+      include: {
+        mahasiswa: {
+          where: { id: userId },
+        },
+      
+      },
     });
-
-
-
-
-
-    const group = await prisma.groupKegiatan.findUnique({
-      where: { id: groupId , creatorId : groupCreator.creatorId },
+  } else {
+    grup = await prisma.groupKegiatan.findFirst({
+      where: { id: groupId },
       include: {
         mahasiswa: {
           where: { id: userId },
         },
       },
     });
+  }
+    
 
-    if (!group) {
+    if (!grup) {
       return res
         .status(404)
-        .json({ message: "Grup kegiatan tidak ditemukan." });
+        .json({ message: "Agenda kegiatan tidak ditemukan." });
     }
 
-    if (group.mahasiswa.length === 0) {
+    if (grup.mahasiswa.length === 0 ) {
       return res
         .status(403)
         .json({ message: "Anda tidak berhak mengakses agenda grup ini." });

@@ -272,7 +272,7 @@ export const addMahasiswaGroup = async (req, res) => {
 
 
 export const createGroupKegiatan = async (req, res) => {
-  const { id_kegiatan, nama_grup } = req.body;
+  const { id_kegiatan, nama_grup  , creatorId} = req.body;
 
   // Validasi
   if (!id_kegiatan) {
@@ -280,6 +280,10 @@ export const createGroupKegiatan = async (req, res) => {
   }
   if (!nama_grup) {
     return sendResponse(res, 400, "Mohon lengkapi nama grup");
+  }
+
+  if (!creatorId) {
+    return sendResponse(res, 400, "Mohon lengkapi id creator"); 
   }
 
   // CHECK ID KEGIATAN
@@ -335,6 +339,7 @@ export const createGroupKegiatan = async (req, res) => {
       data: {
         nama_grup: nama_grup,
         kegiatanId: id_kegiatan,
+        creatorId: creatorId,
       
       },
     });
