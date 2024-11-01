@@ -61,58 +61,55 @@ export const createAgenda = async (req, res) => {
 export const getAgendaByGroup = async (req, res) => {
   const { groupId, userId, creatorId } = req.body;
 
+  
+
   // Validasi input
 
-  if (!groupId || !userId ) {
-    return res.status(400).json({ message: "Group ID, user ID, dan creator ID harus diisi." });
+  if (!groupId) {
+    return res
+      .status(400)
+      .json({ message: "Group ID, user ID, dan creator ID harus diisi." });
   }
 
   try {
     // Periksa apakah grup kegiatan dengan ID tersebut ada dan creator bisakan mengaksesnya
 
-    // ambil creator grup 
+    // ambil creator grup
 
-
-
-
-
-
-// JIKA ADA CREATOR ID NYA MAKA  PAKE DI WHERE
- let grup ;
-if (creatorId) {
-    grup = await prisma.groupKegiatan.findFirst({
-      where: { id: groupId, AND: { creatorId: creatorId } },
-      
-      include: {
-        mahasiswa: {
-          where: { id: userId },
+    // JIKA ADA CREATOR ID NYA MAKA  PAKE DI WHERE
+    let grup;
+    if (creatorId) {
+      grup = await prisma.groupKegiatan.findFirst({
+        where: {
+          creatorId: creatorId,
         },
-      
-      },
-    });
-  } else {
-    grup = await prisma.groupKegiatan.findFirst({
-      where: { id: groupId },
-      include: {
-        mahasiswa: {
-          where: { id: userId },
-        },
-      },
-    });
-  }
-    
+      });
 
-    if (!grup) {
-      return res
-        .status(404)
-        .json({ message: "Agenda kegiatan tidak ditemukan." });
+      if (!grup) {
+        return res
+          .status(403)
+          .json({ message: "Anda tidak berhak mengakses agenda grup ini." });
+      }
+    } else {
+      if (!userId) {
+        return res.status(400).json({ message: "User ID harus diisi." });
+      }
+      grup = await prisma.groupKegiatan.findFirst({
+        where: { id: groupId },
+        include: {
+          mahasiswa: {
+            where: { id: userId },
+          },
+        },
+      });
+      if (grup.mahasiswa.length === 0) {
+        return res
+          .status(403)
+          .json({ message: "Anda tidak berhak mengakses agenda grup ini." });
+      }
     }
 
-    if (grup.mahasiswa.length === 0 ) {
-      return res
-        .status(403)
-        .json({ message: "Anda tidak berhak mengakses agenda grup ini." });
-    }
+  
 
     // Dapatkan agenda berdasarkan groupId DAN TAMPILKAN JUGA NAMA GRUP NYA DI IDGRUP DI TABLE grup
     const agendas = await prisma.agenda.findMany({
