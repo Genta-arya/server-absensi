@@ -79,6 +79,11 @@ export const getAgendaByGroup = async (req, res) => {
     // JIKA ADA CREATOR ID NYA MAKA  PAKE DI WHERE
     let grup;
     if (creatorId) {
+      if (!creatorId) {
+        return res
+          .status(400)
+          .json({ message: "Creator ID harus diisi." });
+      }
       grup = await prisma.groupKegiatan.findFirst({
         where: {
           creatorId: creatorId,
