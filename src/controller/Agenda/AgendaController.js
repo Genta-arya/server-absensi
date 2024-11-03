@@ -30,6 +30,16 @@ export const createAgenda = async (req, res) => {
     return sendResponse(res, 400, "Nama agenda sudah digunakan");
   }
 
+  // find grup id 
+
+  const group = await prisma.groupKegiatan.findUnique({
+    where: { id: grupId },
+  });
+
+  if (!group) {
+    return sendResponse(res, 400, "Grup kegiatan tidak ditemukan");
+  }
+
   // check id ada dan role nya DOSEN
   const user = await prisma.user.findFirst({
     where: { id },
