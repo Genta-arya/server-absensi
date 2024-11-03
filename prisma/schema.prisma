@@ -75,6 +75,16 @@ model FormAgenda {
   @@unique([agendaId, mhsId])
 }
 
+model ErrorLog {
+  id         Int      @id @default(autoincrement())
+  message    String @db.Text
+  detail     String @db.Text
+  statusCode Int      // Kolom status code
+  timestamp  DateTime @default(now())
+}
+
+
+
 enum Role {
   MHS
   DOSEN
