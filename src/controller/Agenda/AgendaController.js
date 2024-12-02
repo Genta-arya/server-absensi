@@ -30,7 +30,7 @@ export const createAgenda = async (req, res) => {
     return sendResponse(res, 400, "Nama agenda sudah digunakan");
   }
 
-  // find grup id 
+  // find grup id
 
   const group = await prisma.groupKegiatan.findUnique({
     where: { id: grupId },
@@ -71,8 +71,6 @@ export const createAgenda = async (req, res) => {
 export const getAgendaByGroup = async (req, res) => {
   const { groupId, userId, creatorId } = req.body;
 
-  
-
   // Validasi input
 
   if (!groupId) {
@@ -80,23 +78,18 @@ export const getAgendaByGroup = async (req, res) => {
       .status(400)
       .json({ message: "Group ID, user ID, dan creator ID harus diisi." });
   }
-
+  let grup;
   try {
-    // Periksa apakah grup kegiatan dengan ID tersebut ada dan creator bisakan mengaksesnya
-
-    // ambil creator grup
-
-    // JIKA ADA CREATOR ID NYA MAKA  PAKE DI WHERE
-    let grup;
     if (creatorId) {
       if (!creatorId) {
-        return res
-          .status(400)
-          .json({ message: "Creator ID harus diisi." });
+        return res.status(400).json({ message: "Creator ID harus diisi." });
       }
       grup = await prisma.groupKegiatan.findFirst({
         where: {
           creatorId: creatorId,
+        },
+        include: {
+          kegiatan: true,
         },
       });
 
@@ -124,18 +117,46 @@ export const getAgendaByGroup = async (req, res) => {
       }
     }
 
-  
+    // ambil data waktu mulai di grup
 
-    // Dapatkan agenda berdasarkan groupId DAN TAMPILKAN JUGA NAMA GRUP NYA DI IDGRUP DI TABLE grup
+    const expired = await prisma.groupKegiatan.findFirst({
+      where: { id: groupId },
+      select: {
+        kegiatan: {
+          select: {
+            waktuselesai: true,
+          },
+        },
+      },
+    });
+
     const agendas = await prisma.agenda.findMany({
       where: { groupId: groupId },
       include: { group: true },
     });
-    // Periksa apakah ada agenda yang dibuat oleh user ini
+
+    const toWIBTime = () => {
+      const now = new Date();
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+      const wib = new Date(utc + 7 * 3600000);
+      return wib;
+    };
+
+    console.log(expired.kegiatan.waktuselesai, toWIBTime());
+    const isExpired = toWIBTime() > new Date(expired.kegiatan.waktuselesai);
+
+    console.log("Apakah expired?", isExpired);
 
     res.status(200).json({
       message: "Daftar agenda berhasil diambil.",
       agendas: agendas,
+
+      // jika waktu selesai melewati waktu sekarang maka expired false
+      // jika waktu selesai belum melewati waktu sekarang maka expired true
+
+      // comapre dengan iso
+
+      expired: isExpired,
     });
   } catch (error) {
     console.error("Error fetching agendas:", error);

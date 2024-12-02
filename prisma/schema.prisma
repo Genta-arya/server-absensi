@@ -60,6 +60,7 @@ model Agenda {
 model FormAgenda {
   id        String   @id @default(uuid())
   agendaId  String?
+  kegiatanId String?
   mhsId     String?
   status    Boolean  @default(false)
   detail    String?  @db.Text
@@ -67,11 +68,12 @@ model FormAgenda {
   tanggal   DateTime?
   gambar1   String?
   gambar2   String?
-  gambar1_b64 String? @db.Text
-  gambar2_b64 String? @db.Text
+  gambar1_b64 String? @db.LongText
+  gambar2_b64 String? @db.LongText
   agenda    Agenda?   @relation(fields: [agendaId], references: [id])
   mahasiswa User?     @relation(fields: [mhsId], references: [id])
-
+  
+  
   @@unique([agendaId, mhsId])
 }
 
