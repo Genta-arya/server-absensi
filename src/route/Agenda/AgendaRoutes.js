@@ -2,6 +2,7 @@ import express from "express";
 import { ambilAgenda, createAgenda, getAgendaByGroup } from "../../controller/Agenda/AgendaController.js";
 import  prisma  from "../../config/prisma.js";
 import { uploadForm } from "../../controller/Form/FormController.js";
+import { uploadMultiple } from "../../config/multer.js";
 
 export const AgendaRoutes = express.Router();
 
@@ -14,4 +15,4 @@ AgendaRoutes.get("/log", (req, res) =>
         return res.json(data);
       })
 );
-AgendaRoutes.post("/upload/form", uploadForm);
+AgendaRoutes.post("/upload/form", uploadMultiple, uploadForm);

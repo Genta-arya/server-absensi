@@ -151,11 +151,7 @@ export const getAgendaByGroup = async (req, res) => {
       message: "Daftar agenda berhasil diambil.",
       agendas: agendas,
 
-      // jika waktu selesai melewati waktu sekarang maka expired false
-      // jika waktu selesai belum melewati waktu sekarang maka expired true
-
-      // comapre dengan iso
-
+  
       expired: isExpired,
     });
   } catch (error) {
@@ -230,12 +226,7 @@ export const ambilAgenda = async (req, res) => {
     if (checkForm) {
       return sendResponse(res, 400, "Agenda sudah digunakan");
     } else {
-      await prisma.formAgenda.create({
-        data: {
-          agendaId: idAgenda,
-          mhsId: idUser,
-        },
-      });
+     
     }
 
     return sendResponse(res, 200, "Agenda berhasil diambil");

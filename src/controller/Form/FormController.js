@@ -1,129 +1,115 @@
-import { uploadMultiple } from "../../config/multer.js";
 import prisma from "../../config/prisma.js";
-import { handleError } from "../../utils/errorHandler.js";
-import fs from "fs";
 import sharp from "sharp";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadDir = path.join(__dirname, "../../public/uploads");
+const kegiatanDir = path.join(uploadDir, "kegiatan");
 
-// Fungsi untuk delay
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const unlinkImage = (filePath) => {
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error("Error deleting file:", err);
+    }
+  });
+}
+
 
 export const uploadForm = async (req, res) => {
   try {
-    // Middleware Multer untuk menangani banyak file
-    uploadMultiple(req, res, async (err) => {
-      if (err) {
-        return res.status(400).send({ message: err.message });
+    // Pastikan 'forms' diterima sebagai string JSON
+    const { forms } = req.body;
+
+    // Jika forms tidak ada, kirimkan pesan kesalahan
+    if (!forms) {
+      return res
+        .status(400)
+        .send({ message: "'forms' tidak ditemukan dalam request body" });
+    }
+
+    // Parsing 'forms' yang berupa string JSON
+    const parsedForms = JSON.parse(forms);
+
+    // Validasi apakah ada data form yang valid
+    if (!parsedForms || parsedForms.length === 0) {
+      return res
+        .status(400)
+        .send({ message: "Tidak ada data form yang valid" });
+    }
+
+    // Memastikan bahwa file diterima melalui 'files' di FormData
+    const files = req.files;
+    if (!files || files.length === 0) {
+      return res.status(400).send({ message: "Tidak ada file yang diunggah" });
+    }
+
+    // Melakukan upload dan kompresi file dengan sharp
+    let baseUrl =
+      process.env.MODE === "pro"
+        ? "https://dev-absensi.hkks.shop/public/uploads/kegiatan/"
+        : "http://localhost:3008/public/uploads/kegiatan/";
+
+    const compressAndConvertToBase64 = async (filePath) => {
+      try {
+        const compressedImageBuffer = await sharp(filePath)
+          .resize(800)
+          .jpeg({ quality: 70 })
+          .toBuffer();
+
+        const base64String = compressedImageBuffer.toString("base64");
+        return `data:image/jpeg;base64,${base64String}`;
+      } catch (error) {
+        console.error("Error during image compression and conversion:", error);
+        throw error;
       }
+    };
 
-      // Ambil data dari request body dan file
-      const { agendaId, kegiatanId, gps, detail, userId } = req.body;
-      const files = req.files.map((file) => file.path); // Path ke file gambar yang diunggah
+    const base64Files = await Promise.all(
+      files.slice(0, 2).map(async (file) => {
+        return await compressAndConvertToBase64(file.path);
+      })
+    );
 
-      let baseUrl = ``;
-      if (process.env.MODE === "pro") {
-        baseUrl = `https://dev-absensi.hkks.shop/public/uploads/kegiatan/`;
-      } else {
-        baseUrl = `http://localhost:3008/public/uploads/kegiatan/`;
-      }
+    const imageUrls = files.map((file) => `${baseUrl}${file.filename}`);
 
-      // Fungsi untuk mengonversi gambar ke base64 setelah kompresi
-      const compressAndConvertToBase64 = async (filePath) => {
-        try {
-          // Kompres gambar menggunakan sharp
-          const compressedImageBuffer = await sharp(filePath)
-            .resize(800) // Ukuran maksimal (ubah sesuai kebutuhan)
-            .jpeg({ quality: 70 }) // Kompresi kualitas gambar (ubah sesuai kebutuhan)
-            .toBuffer(); // Menghasilkan buffer gambar
-
-          // Konversi gambar terkompresi ke base64
-          const base64String = compressedImageBuffer.toString("base64");
-          const mimeType = "jpeg"; // Tipe mime jika menggunakan kompresi JPEG
-          return `data:image/${mimeType};base64,${base64String}`;
-        } catch (error) {
-          console.error("Error during image compression and conversion:", error);
-          throw error;
-        }
-      };
-
-      // Ambil Base64 dan jenis gambar untuk file pertama dan kedua (gambar1 dan gambar2)
-      const base64Files = await Promise.all(
-        req.files.slice(0, 2).map(async (file) => {
-          return await compressAndConvertToBase64(file.path);
-        })
-      );
-
-      // Membuat URL untuk file gambar yang diunggah
-      const imageUrls = req.files.map((file) => `${baseUrl}${file.filename}`);
-
-      // Persiapkan data untuk disimpan di database
+    // Loop untuk menyimpan setiap form
+    for (let form of parsedForms) {
       const savedData = {
-        agenda: { connect: { id: agendaId } }, // Menghubungkan dengan relasi 'agenda' menggunakan id
-        kegiatanId: kegiatanId,
-        gps,
-        detail,
+        agenda: { connect: { id: form.agendaId } },
+        kegiatanId: form.kegiatanId,
+        gps: form.gps,
+        detail: form.detail,
         tanggal: new Date(),
         status: true,
-        mahasiswa: { connect: { id: userId } },
-        gambar1_b64: base64Files[0], // Base64 gambar pertama
-        gambar2_b64: base64Files[1], // Base64 gambar kedua
+        mahasiswa: { connect: { id: form.userId } },
+        gambar1_b64: base64Files[0],
+        gambar2_b64: base64Files[1],
         gambar1: imageUrls[0],
         gambar2: imageUrls[1],
       };
 
-      // Cek apakah form dengan agendaId sudah ada
-      const agenda = await prisma.formAgenda.findFirst({
-        where: { agendaId: agendaId },
+      const agenda = await prisma.formAgenda.findMany({
+        where: { agenda: { id: form.agendaId, status: true } },
       });
 
-      if (agenda) {
-        // Jika sudah ada, hapus file yang diupload
-        if (req.files) {
-          req.files.forEach((file) => {
-            try {
-              if (fs.existsSync(file.path)) {
-                fs.unlinkSync(file.path); // Hapus file jika ada
-              }
-            } catch (unlinkError) {
-              console.error(`Failed to delete file: ${file.path}`, unlinkError);
-            }
-          });
-        }
-        return res.status(400).send({ message: "Form telah disubmit" });
-      } else {
-        // Simpan data ke database
+      if (agenda.length === 0) {
         await prisma.formAgenda.create({ data: savedData });
-      }
+      } 
 
-      // Update status agenda
-      await prisma.agenda.update({
-        where: {
-          id: agendaId,
-        },
-        data: {
-          status: true,
-        },
+      await prisma.agenda.updateMany({
+        where: { id: form.agendaId },
+        data: { status: true },
       });
+    }
 
-      // Kirimkan respons
-      res.status(200).json({
-        message: "Form berhasil diunggah.",
-        data: savedData,
-      });
+    res.status(200).json({
+      message: "Form berhasil diunggah.",
     });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Terjadi kesalahan server." });
-    // Hapus file jika ada error
-    if (req.files) {
-      req.files.forEach((file) => {
-        try {
-          if (fs.existsSync(file.path)) {
-            fs.unlinkSync(file.path); // Hapus file jika ada
-          }
-        } catch (unlinkError) {
-          console.error(`Failed to delete file: ${file.path}`, unlinkError);
-        }
-      });
-    }
   }
 };
