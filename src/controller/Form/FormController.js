@@ -92,7 +92,7 @@ export const uploadForm = async (req, res) => {
 
       await prisma.agenda.updateMany({
         where: { id: form.agendaId },
-        data: { status: false },
+        data: { status: true },
       });
     }
 
