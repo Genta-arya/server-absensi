@@ -2,12 +2,11 @@ import prisma from "../../config/prisma.js";
 import sharp from "sharp";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadDir = path.join(__dirname, "../../public/uploads");
 const kegiatanDir = path.join(uploadDir, "kegiatan");
-
 
 const unlinkImage = (filePath) => {
   fs.unlink(filePath, (err) => {
@@ -15,38 +14,31 @@ const unlinkImage = (filePath) => {
       console.error("Error deleting file:", err);
     }
   });
-}
-
+};
 
 export const uploadForm = async (req, res) => {
   try {
-    // Pastikan 'forms' diterima sebagai string JSON
     const { forms } = req.body;
 
-    // Jika forms tidak ada, kirimkan pesan kesalahan
     if (!forms) {
       return res
         .status(400)
         .send({ message: "'forms' tidak ditemukan dalam request body" });
     }
 
-    // Parsing 'forms' yang berupa string JSON
     const parsedForms = JSON.parse(forms);
 
-    // Validasi apakah ada data form yang valid
     if (!parsedForms || parsedForms.length === 0) {
       return res
         .status(400)
         .send({ message: "Tidak ada data form yang valid" });
     }
 
-    // Memastikan bahwa file diterima melalui 'files' di FormData
     const files = req.files;
     if (!files || files.length === 0) {
       return res.status(400).send({ message: "Tidak ada file yang diunggah" });
     }
 
-    // Melakukan upload dan kompresi file dengan sharp
     let baseUrl =
       process.env.MODE === "pro"
         ? "https://dev-absensi.hkks.shop/public/uploads/kegiatan/"
@@ -75,7 +67,6 @@ export const uploadForm = async (req, res) => {
 
     const imageUrls = files.map((file) => `${baseUrl}${file.filename}`);
 
-    // Loop untuk menyimpan setiap form
     for (let form of parsedForms) {
       const savedData = {
         agenda: { connect: { id: form.agendaId } },
@@ -97,16 +88,22 @@ export const uploadForm = async (req, res) => {
 
       if (agenda.length === 0) {
         await prisma.formAgenda.create({ data: savedData });
-      } 
+      }
 
       await prisma.agenda.updateMany({
         where: { id: form.agendaId },
-        data: { status: true },
+        data: { status: false },
       });
     }
 
     res.status(200).json({
       message: "Form berhasil diunggah.",
+      status: 200,
+     
+      data: parsedForms.map((form) => form.agendaId),
+
+
+      
     });
   } catch (error) {
     console.error(error);

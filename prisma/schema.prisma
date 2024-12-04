@@ -51,7 +51,7 @@ model Agenda {
   groupId    String
   deskripsi  String?       @db.Text
   idUser     String?
-  status     Boolean       @default(false)
+  status     Boolean?     
   nama       String
   group      GroupKegiatan @relation("AgendaGroups", fields: [groupId], references: [id])
   FormAgenda FormAgenda[]
@@ -62,7 +62,7 @@ model FormAgenda {
   agendaId  String?
   kegiatanId String?
   mhsId     String?
-  status    Boolean  @default(false)
+  status    Boolean  
   detail    String?  @db.Text
   gps       String?
   tanggal   DateTime?
