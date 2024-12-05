@@ -1,7 +1,7 @@
 import express from "express";
 import { ambilAgenda, createAgenda, getAgendaByGroup } from "../../controller/Agenda/AgendaController.js";
 import  prisma  from "../../config/prisma.js";
-import { uploadForm } from "../../controller/Form/FormController.js";
+import { getSingleForm, updateForm, uploadForm } from "../../controller/Form/FormController.js";
 import { uploadMultiple } from "../../config/multer.js";
 import { getHistoryAgenda } from "../../controller/History/HistoryController.js";
 
@@ -18,3 +18,5 @@ AgendaRoutes.get("/log", (req, res) =>
 );
 AgendaRoutes.post("/upload/form", uploadMultiple, uploadForm);
 AgendaRoutes.post("/history/agenda", getHistoryAgenda)
+AgendaRoutes.put("/edit/form/:id" , uploadMultiple, updateForm )
+AgendaRoutes.get("/form/:id",getSingleForm)

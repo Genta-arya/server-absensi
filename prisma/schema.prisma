@@ -53,6 +53,7 @@ model Agenda {
   idUser     String?
   status     Boolean?     
   nama       String
+  status_berkas Boolean @default(false)
   group      GroupKegiatan @relation("AgendaGroups", fields: [groupId], references: [id])
   FormAgenda FormAgenda[]
 }

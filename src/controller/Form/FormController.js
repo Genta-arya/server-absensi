@@ -92,21 +92,58 @@ export const uploadForm = async (req, res) => {
 
       await prisma.agenda.updateMany({
         where: { id: form.agendaId },
-        data: { status: true },
+        data: { status_berkas: true },
       });
     }
 
     res.status(200).json({
       message: "Form berhasil diunggah.",
       status: 200,
-     
+
       data: parsedForms.map((form) => form.agendaId),
-
-
-      
     });
   } catch (error) {
     console.error(error);
+    res.status(500).send({ message: "Terjadi kesalahan server." });
+  }
+};
+
+export const updateForm = async (req, res) => {
+  const { forms } = req.body;
+  const { id } = req.params;
+
+  // chechk already forms
+  const exitsData = await prisma.formAgenda.findFirst({
+    where: {
+      agendaId: id,
+    },
+  });
+
+  if (!exitsData) {
+    return res.status(400).send({ message: "Form tidak ditemukan" });
+  }
+  try {
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Terjadi kesalahan server." });
+  }
+};
+
+export const getSingleForm = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const exits = await prisma.formAgenda.findFirst({
+      where: {
+        id: id,
+      },
+    });
+    if (!exits) {
+      return res.status(400).send({ message: "Form tidak ditemukan" });
+    }
+    return res.status(200).send({ message: "Form ditemukan", data: exits });
+  } catch (error) {
+    console.log(error);
     res.status(500).send({ message: "Terjadi kesalahan server." });
   }
 };
