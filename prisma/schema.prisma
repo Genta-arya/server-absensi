@@ -74,8 +74,7 @@ model FormAgenda {
   agenda    Agenda?   @relation(fields: [agendaId], references: [id])
   mahasiswa User?     @relation(fields: [mhsId], references: [id])
   
-  
-  @@unique([agendaId, mhsId])
+ 
 }
 
 model ErrorLog {

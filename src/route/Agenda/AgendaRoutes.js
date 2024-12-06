@@ -18,5 +18,5 @@ AgendaRoutes.get("/log", (req, res) =>
 );
 AgendaRoutes.post("/upload/form", uploadMultiple, uploadForm);
 AgendaRoutes.post("/history/agenda", getHistoryAgenda)
-AgendaRoutes.put("/edit/form/:id" , uploadMultiple, updateForm )
+AgendaRoutes.post("/edit/form", uploadMultiple, updateForm )
 AgendaRoutes.get("/form/:id",getSingleForm)

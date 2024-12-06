@@ -107,24 +107,76 @@ export const uploadForm = async (req, res) => {
     res.status(500).send({ message: "Terjadi kesalahan server." });
   }
 };
-
 export const updateForm = async (req, res) => {
   const { forms } = req.body;
-  const { id } = req.params;
 
-  // chechk already forms
-  const exitsData = await prisma.formAgenda.findFirst({
-    where: {
-      agendaId: id,
-    },
-  });
+  const files = req.files;
+ console.log(files)
+  const formatForms = JSON.parse(forms);
 
-  if (!exitsData) {
-    return res.status(400).send({ message: "Form tidak ditemukan" });
-  }
+ 
+
+  const baseUrl =
+    process.env.MODE === "pro"
+      ? "https://dev-absensi.hkks.shop/public/uploads/kegiatan/"
+      : "http://localhost:3008/public/uploads/kegiatan/";
+
+  const compressAndConvertToBase64 = async (filePath) => {
+    try {
+      const compressedImageBuffer = await sharp(filePath)
+        .resize(800) // Ubah ukuran gambar
+        .jpeg({ quality: 70 }) // Kompres kualitas
+        .toBuffer();
+
+      const base64String = compressedImageBuffer.toString("base64");
+      return `data:image/jpeg;base64,${base64String}`;
+    } catch (error) {
+      console.error("Error during image compression and conversion:", error);
+      throw error;
+    }
+  };
+
   try {
+    // Konversi gambar ke Base64
+    const base64Files = await Promise.all(
+      files.slice(0, 2).map(async (file) => {
+        return await compressAndConvertToBase64(file.path);
+      })
+    );
+
+    // Buat URL gambar
+    const imageUrls = files.map((file) => `${baseUrl}${file.filename}`);
+
+    // Periksa apakah data form ada
+    const existingData = await prisma.formAgenda.findFirst({
+      where: {
+        agendaId: forms.id,
+      },
+    });
+
+    if (!existingData) {
+      console.log("Form tidak ditemukan");
+      return res.status(400).send({ message: "Form tidak ditemukan" });
+    }
+
+    // Update data form di database
+    const updatedForm = await prisma.formAgenda.update({
+      where: { id: existingData.id },
+      data: {
+        detail: formatForms.detail ,
+        gambar1: imageUrls[0] || existingData.gambar1,
+        gambar2: imageUrls[1] || existingData.gambar2,
+        gambar1_b64: base64Files[0] || existingData.gambar1_b64,
+        gambar2_b64: base64Files[1] || existingData.gambar2_b64,
+      },
+    });
+
+    res.status(200).send({
+      message: "Form berhasil diperbarui",
+      data: updatedForm,
+    });
   } catch (error) {
-    console.error(error);
+    console.error("Error updating form:", error);
     res.status(500).send({ message: "Terjadi kesalahan server." });
   }
 };
@@ -135,7 +187,19 @@ export const getSingleForm = async (req, res) => {
   try {
     const exits = await prisma.formAgenda.findFirst({
       where: {
-        id: id,
+        agendaId: id,
+      },
+      select: {
+        id: true,
+        agendaId: true,
+        tanggal: true,
+        gambar1: true,
+        gambar2: true,
+        gambar1_b64: true,
+        gambar2_b64: true,
+        status: true,
+        gps: true,
+        detail: true,
       },
     });
     if (!exits) {

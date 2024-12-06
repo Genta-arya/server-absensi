@@ -52,28 +52,7 @@ const multerConfig = {
       }
     },
     filename: async (req, file, cb) => {
-      if (!req.body.forms) {
-        return cb(new Error("Forms data is missing.")); // Mengembalikan error jika tidak ada forms
-      }
-
-      const forms = JSON.parse(req.body.forms);
-      let namaKegiatan = ""; // Initialize namaKegiatan di luar loop
-
-      // Loop untuk memeriksa dan memproses setiap agendaId
-      for (const form of forms) {
-        const { agendaId } = form;
-
-        if (!agendaId) {
-          return cb(new Error("Agenda ID is missing in the form.")); // Jika agendaId tidak ditemukan, return error
-        }
-
       
-        // Ambil nama kegiatan berdasarkan agendaId
-        namaKegiatan = await getNamaKegiatan(agendaId);
-        // Jika Anda ingin ambil nama kegiatan pertama, hentikan loop
-        break; // Menghentikan loop setelah menemukan nama kegiatan pertama
-      }
-
       try {
         const timestamp = Date.now(); // Gunakan timestamp sebagai bagian dari nama file
         const extension = path.extname(file.originalname); // Mendapatkan ekstensi file
