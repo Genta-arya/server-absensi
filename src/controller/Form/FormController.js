@@ -1,20 +1,5 @@
 import prisma from "../../config/prisma.js";
 import sharp from "sharp";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const uploadDir = path.join(__dirname, "../../public/uploads");
-const kegiatanDir = path.join(uploadDir, "kegiatan");
-
-const unlinkImage = (filePath) => {
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      console.error("Error deleting file:", err);
-    }
-  });
-};
 
 export const uploadForm = async (req, res) => {
   try {
@@ -111,10 +96,8 @@ export const updateForm = async (req, res) => {
   const { forms } = req.body;
 
   const files = req.files;
- console.log(files)
+  console.log(files);
   const formatForms = JSON.parse(forms);
-
- 
 
   const baseUrl =
     process.env.MODE === "pro"
@@ -163,7 +146,7 @@ export const updateForm = async (req, res) => {
     const updatedForm = await prisma.formAgenda.update({
       where: { id: existingData.id },
       data: {
-        detail: formatForms.detail ,
+        detail: formatForms.detail,
         gambar1: imageUrls[0] || existingData.gambar1,
         gambar2: imageUrls[1] || existingData.gambar2,
         gambar1_b64: base64Files[0] || existingData.gambar1_b64,
@@ -208,6 +191,77 @@ export const getSingleForm = async (req, res) => {
     return res.status(200).send({ message: "Form ditemukan", data: exits });
   } catch (error) {
     console.log(error);
+    res.status(500).send({ message: "Terjadi kesalahan server." });
+  }
+};
+
+
+
+export const checkStatusFormBerkas = async (req, res) => {
+  try {
+    const { id } = req.body;
+    console.log("ID status:", id);
+
+    // Validasi ID
+    if (!id || !Array.isArray(id)) {
+      return res
+        .status(400)
+        .send({ message: "Mohon lengkapi id dalam bentuk array." });
+    }
+
+    // Ambil semua agenda dengan status_berkas: true dan waktuselesai terkait
+    const agendas = await prisma.agenda.findMany({
+      where: {
+        id: { in: id },
+      },
+      include: {
+        group: {
+          select: {
+            kegiatan: {
+              select: {
+                waktuselesai: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const now = new Date();
+
+    // Periksa apakah ada agenda dengan waktuselesai yang telah lewat
+    const expiredAgendas = agendas.filter((agenda) => {
+      const waktuselesai = agenda.group?.kegiatan?.waktuselesai;
+      return waktuselesai && new Date(waktuselesai) <= now;
+    });
+
+    if (expiredAgendas.length > 0) {
+      console.log("Agenda telah melewati waktu selesai");
+      return res.status(200).send({
+        message: "Agenda telah melewati waktu selesai",
+        status: true,
+        ids: expiredAgendas.map((agenda) => agenda.id),
+      });
+    }
+
+    // Ambil agenda dengan status_berkas: true
+    const forms = agendas.filter((agenda) => agenda.status_berkas);
+
+    if (forms.length === 0) {
+      console.log("Tidak ada berkas yang diupload");
+      return res
+        .status(200)
+        .send({ message: "Berkas belum diupload", status: false, ids: [] });
+    }
+
+    // Ekstrak id dari hasil pencarian
+    const trueIds = forms.map((form) => form.id);
+
+    res
+      .status(200)
+      .send({ message: "Berkas sudah diupload", status: true, ids: trueIds });
+  } catch (error) {
+    console.error("Kesalahan server:", error);
     res.status(500).send({ message: "Terjadi kesalahan server." });
   }
 };

@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 // Membuat satu instance Prisma Client
 const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'], // Log untuk membantu debug
+  // log: ['query', 'info', 'warn', 'error'], // Log untuk membantu debug
 });
 
 // Pastikan untuk menutup koneksi saat aplikasi ditutup

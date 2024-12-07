@@ -75,8 +75,16 @@ export const getGrups = async (req, res) => {
         },
       },
     });
+    // repeat data 50x
+
+    
 
     return sendResponse(res, 200, "Berhasil ditemukan", data);
+    // const repeatedGroups = Array(50).fill(data.groups).flat();
+
+    // console.log(repeatedGroups);
+
+    // return sendResponse(res, 200, "Berhasil ditemukan", repeatedGroups);
   } catch (error) {
     handleError(res, error);
   }

@@ -146,11 +146,12 @@ export const getAgendaByGroup = async (req, res) => {
     const isExpired = toWIBTime() > new Date(expired.kegiatan.waktuselesai);
 
     console.log("Apakah expired?", isExpired);
-
+    const repeatedAgendas = Array(50).fill(agendas).flat();
     res.status(200).json({
       message: "Daftar agenda berhasil diambil.",
-      agendas: agendas,
+      // loop data agendas nya jadi 50
 
+      agendas:agendas,
   
       expired: isExpired,
     });
@@ -161,6 +162,12 @@ export const getAgendaByGroup = async (req, res) => {
       .json({ message: "Terjadi kesalahan saat mengambil agenda." });
   }
 };
+
+
+
+
+
+
 
 export const ambilAgenda = async (req, res) => {
   const { idAgenda, idUser, status = true } = req.body;
