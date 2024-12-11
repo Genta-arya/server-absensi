@@ -166,6 +166,7 @@ export const updateForm = async (req, res) => {
 
 export const getSingleForm = async (req, res) => {
   const { id } = req.params;
+  console.log("id retrive" , id)
 
   try {
     const exits = await prisma.formAgenda.findFirst({

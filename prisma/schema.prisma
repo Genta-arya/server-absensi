@@ -17,6 +17,7 @@ model User {
   token           String?
   avatar          String?         @default("https://cdn-icons-png.flaticon.com/512/3135/3135715.png")
   role            Role            @default(MHS)
+   createdAt DateTime @default(now())
   Group           GroupKegiatan[] @relation("GroupMahasiswa")
   createdKegiatan Kegiatan[]      @relation("KegiatanCreator")
   FormAgenda      FormAgenda[]
@@ -31,6 +32,7 @@ model Kegiatan {
   waktuselesai DateTime
   creatorId    String
   visible      Boolean         @default(true)
+   createdAt DateTime @default(now())
   creator      User            @relation("KegiatanCreator", fields: [creatorId], references: [id])
   groups       GroupKegiatan[] @relation("KegiatanGroups")
 }
@@ -42,6 +44,7 @@ model GroupKegiatan {
   kegiatan   Kegiatan @relation("KegiatanGroups", fields: [kegiatanId], references: [id])
   kegiatanId String
   creatorId String
+   createdAt DateTime @default(now())
   Agenda     Agenda[] @relation("AgendaGroups")
 }
 
@@ -53,6 +56,7 @@ model Agenda {
   idUser     String?
   status     Boolean?     
   nama       String
+  createdAt DateTime @default(now())
   status_berkas Boolean @default(false)
   group      GroupKegiatan @relation("AgendaGroups", fields: [groupId], references: [id])
   FormAgenda FormAgenda[]
@@ -71,6 +75,7 @@ model FormAgenda {
   gambar2   String?
   gambar1_b64 String? @db.LongText
   gambar2_b64 String? @db.LongText
+   createdAt DateTime @default(now())
   agenda    Agenda?   @relation(fields: [agendaId], references: [id])
   mahasiswa User?     @relation(fields: [mhsId], references: [id])
   

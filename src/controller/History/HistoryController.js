@@ -3,7 +3,9 @@ import { handleError } from "../../utils/errorHandler.js";
 import { sendResponse } from "../../utils/responseHandler.js";
 
 export const getHistoryAgenda = async (req, res) => {
-  const { id = "026446c7-8999-49cb-8bd5-526868b0e863" } = req.body;
+  const { id } = req.body;
+
+  console.log(id);
   try {
     // Check if user exists
     const checkUserId = await prisma.user.findUnique({
@@ -14,13 +16,15 @@ export const getHistoryAgenda = async (req, res) => {
       return sendResponse(res, 404, "User not found");
     }
 
-    // Get agenda
+    // Get the latest 5 agendas
     const agenda = await prisma.agenda.findMany({
       where: { idUser: id, status: true },
+      orderBy: { createdAt: "desc" }, // Sort by latest createdAt
+      take: 5, // Take only the latest 5
     });
 
     if (agenda.length === 0) {
-      return sendResponse(res, 404, "No agenda found");
+      return sendResponse(res, 200, "No agenda found");
     }
 
     // Get CreatedId user names
@@ -43,6 +47,38 @@ export const getHistoryAgenda = async (req, res) => {
     });
 
     return sendResponse(res, 200, "Success", formattedAgenda);
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const getHistoryData = async (req, res) => {
+  const { id } = req.params;
+  try {
+    // check id
+    if (!id) {
+      return sendResponse(res, 400, "Mohon lengkapi id");
+    }
+    const existUser = await prisma.user.findFirst({
+      where: {
+        id,
+      },
+    });
+
+    if (!existUser) {
+      return sendResponse(res, 404, "User not found");
+    }
+
+    const history = await prisma.agenda.findMany({
+      where: {
+        idUser: id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return sendResponse(res, 200, "Success", history);
   } catch (error) {
     handleError(res, error);
   }
