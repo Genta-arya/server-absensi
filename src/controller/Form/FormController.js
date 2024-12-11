@@ -98,6 +98,7 @@ export const updateForm = async (req, res) => {
   const files = req.files;
   console.log(files);
   const formatForms = JSON.parse(forms);
+  console.log("id update", formatForms.id)
 
   const baseUrl =
     process.env.MODE === "pro"
@@ -133,9 +134,12 @@ export const updateForm = async (req, res) => {
     // Periksa apakah data form ada
     const existingData = await prisma.formAgenda.findFirst({
       where: {
-        agendaId: forms.id,
+        agendaId: formatForms.id,
       },
+
     });
+
+    console.log("id extis",existingData.id);
 
     if (!existingData) {
       console.log("Form tidak ditemukan");
