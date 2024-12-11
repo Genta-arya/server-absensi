@@ -26,7 +26,7 @@ export const uploadForm = async (req, res) => {
 
     let baseUrl =
       process.env.MODE === "pro"
-        ? "https://dev-absensi.hkks.shop/public/uploads/kegiatan/"
+        ? `${process.env.URL}/public/uploads/kegiatan/`
         : "http://localhost:3008/public/uploads/kegiatan/";
 
     const compressAndConvertToBase64 = async (filePath) => {
@@ -101,7 +101,7 @@ export const updateForm = async (req, res) => {
 
   const baseUrl =
     process.env.MODE === "pro"
-      ? "https://dev-absensi.hkks.shop/public/uploads/kegiatan/"
+      ? `${process.env.URL}/public/uploads/kegiatan/`
       : "http://localhost:3008/public/uploads/kegiatan/";
 
   const compressAndConvertToBase64 = async (filePath) => {
@@ -166,7 +166,7 @@ export const updateForm = async (req, res) => {
 
 export const getSingleForm = async (req, res) => {
   const { id } = req.params;
-  console.log("id retrive" , id)
+  console.log("id retrive", id);
 
   try {
     const exits = await prisma.formAgenda.findFirst({
@@ -195,8 +195,6 @@ export const getSingleForm = async (req, res) => {
     res.status(500).send({ message: "Terjadi kesalahan server." });
   }
 };
-
-
 
 export const checkStatusFormBerkas = async (req, res) => {
   try {

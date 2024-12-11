@@ -81,7 +81,7 @@ export const updateAvatar = async (req, res) => {
     // Buat URL lengkap untuk avatar baru
     let newAvatarUrl = ``;
     if (process.env.MODE === "pro") {
-      newAvatarUrl = `https://dev-absensi.hkks.shop/public/uploads/profile/${req.file.filename}`;
+      newAvatarUrl = `${process.env.URL}/public/uploads/profile/${req.file.filename}`;
     } else {
       newAvatarUrl = `http://localhost:3000/public/uploads/profile/${req.file.filename}`;
     }
