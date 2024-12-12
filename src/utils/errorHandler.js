@@ -13,7 +13,7 @@ export const handleError = async (
     data: {
       message: customMessage,
       statusCode: 500,
-      detail: error,
+      detail: "error",
     },
   });
 

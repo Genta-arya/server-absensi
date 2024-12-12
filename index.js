@@ -7,6 +7,8 @@ import AuthRouter from "./src/route/Auth/AuthRoutes.js";
 import { ProfileRoutes } from "./src/route/Profile/ProfileRoutes.js";
 import { KegiatanRoutes } from "./src/route/Kegiatan/KegiatanRoutes.js";
 import { AgendaRoutes } from "./src/route/Agenda/AgendaRoutes.js";
+import cron from "node-cron";
+import { checkStatusKegiatan } from "./src/controller/Agenda/AgendaController.js";
 dotenv.config();
 
 const app = express();
@@ -64,6 +66,22 @@ app.use("/api/v1", KegiatanRoutes);
 // Agenda
 app.use("/api/v1", AgendaRoutes);
 
+// cron job
+
+// cron.schedule("0 0 * * *", () => {
+//   console.log("Cron job berjalan setiap tengah malam (00:00).");
+//   // Tempatkan kode yang ingin dijalankan secara periodik di sini
+//   // Misalnya, kamu bisa melakukan tugas-tugas seperti:
+//   // - Mengirim email batch
+//   // - Menghapus data lama
+//   // - Memperbarui status tertentu di database
+//   // Atau melakukan tugas lain sesuai kebutuhan
+// });
+
+cron.schedule('0 0 */3 * *', () => {
+  checkStatusKegiatan();
+  console.log("Tugas dijalankan setiap 3 hari pada jam 12 malam.");
+});
 httpServer.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });

@@ -1,7 +1,7 @@
 import prisma from "../../config/prisma.js";
 import { handleError } from "../../utils/errorHandler.js";
 import { sendResponse } from "../../utils/responseHandler.js";
-
+import moment from "moment-timezone";
 export const createAgenda = async (req, res) => {
   const { id, name, grupId, deskripsi } = req.body;
   // validate
@@ -151,8 +151,8 @@ export const getAgendaByGroup = async (req, res) => {
       message: "Daftar agenda berhasil diambil.",
       // loop data agendas nya jadi 50
 
-      agendas:agendas,
-  
+      agendas: agendas,
+
       expired: isExpired,
     });
   } catch (error) {
@@ -162,12 +162,6 @@ export const getAgendaByGroup = async (req, res) => {
       .json({ message: "Terjadi kesalahan saat mengambil agenda." });
   }
 };
-
-
-
-
-
-
 
 export const ambilAgenda = async (req, res) => {
   const { idAgenda, idUser, status = true } = req.body;
@@ -233,11 +227,46 @@ export const ambilAgenda = async (req, res) => {
     if (checkForm) {
       return sendResponse(res, 400, "Agenda sudah digunakan");
     } else {
-     
     }
 
     return sendResponse(res, 200, "Agenda berhasil diambil");
   } catch (error) {
     handleError(res, error);
+  }
+};
+
+export const checkStatusKegiatan = async (req, res) => {
+  try {
+    // Mengambil waktu saat ini di WIB (UTC+7)
+    const waktuSekarang = moment().tz("Asia/Jakarta").toDate();
+    console.log("Waktu sekarang:", waktuSekarang);
+    console.log("Waktu sekarang:", waktuSekarang.toLocaleDateString());
+
+    // Update status kegiatan yang lewat tanggal menjadi false
+    const updateKegiatan = await prisma.kegiatan.updateMany({
+      where: {
+        waktuselesai: {
+          lt: waktuSekarang,
+        },
+        visible: true,
+      },
+      data: {
+        visible: false, // Memperbarui status menjadi false
+      },
+    });
+
+    // Jika ada kegiatan yang diupdate, tampilkan log
+    if (updateKegiatan.count > 0) {
+      console.log(
+        `${updateKegiatan.count} kegiatan diperbarui dan statusnya diubah menjadi tidak terlihat.`
+      );
+    } else {
+      console.log("Tidak ada kegiatan yang perlu diperbarui.");
+    }
+
+    // res.status(200).json({ message: "Kegiatan berhasil diperbarui" });
+  } catch (error) {
+    console.error("Error:", error);
+    // res.status(500).json({ message: "Terjadi kesalahan server" });
   }
 };
