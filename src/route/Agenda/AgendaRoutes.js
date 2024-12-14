@@ -7,6 +7,7 @@ import {
 import prisma from "../../config/prisma.js";
 import {
   checkStatusFormBerkas,
+  getDetailForm,
   getSingleForm,
   updateForm,
   uploadForm,
@@ -33,3 +34,4 @@ AgendaRoutes.post("/edit/form", uploadMultiple, updateForm);
 AgendaRoutes.get("/form/:id", getSingleForm);
 AgendaRoutes.post("/check/form", checkStatusFormBerkas);
 AgendaRoutes.get("/history/agenda/:id", getHistoryData);
+AgendaRoutes.get("/detail/form", getDetailForm)

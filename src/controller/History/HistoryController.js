@@ -18,7 +18,7 @@ export const getHistoryAgenda = async (req, res) => {
 
     // Get the latest 5 agendas
     const agenda = await prisma.agenda.findMany({
-      where: { idUser: id, status: true },
+      where: { idUser: id, status_berkas: true },
       orderBy: { createdAt: "desc" }, // Sort by latest createdAt
       take: 5, // Take only the latest 5
     });

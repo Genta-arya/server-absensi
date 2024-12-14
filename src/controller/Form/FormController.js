@@ -98,7 +98,7 @@ export const updateForm = async (req, res) => {
   const files = req.files;
   console.log(files);
   const formatForms = JSON.parse(forms);
-  console.log("id update", formatForms.id)
+  console.log("id update", formatForms.id);
 
   const baseUrl =
     process.env.MODE === "pro"
@@ -136,10 +136,9 @@ export const updateForm = async (req, res) => {
       where: {
         agendaId: formatForms.id,
       },
-
     });
 
-    console.log("id extis",existingData.id);
+    console.log("id extis", existingData.id);
 
     if (!existingData) {
       console.log("Form tidak ditemukan");
@@ -265,6 +264,59 @@ export const checkStatusFormBerkas = async (req, res) => {
       .send({ message: "Berkas sudah diupload", status: true, ids: trueIds });
   } catch (error) {
     console.error("Kesalahan server:", error);
+    res.status(500).send({ message: "Terjadi kesalahan server." });
+  }
+};
+
+export const getDetailForm = async (req, res) => {
+  const {
+    idUser = "026446c7-8999-49cb-8bd5-526868b0e863",
+    id = "f602611b-d11c-46c9-85b9-a093555e6147",
+  } = req.body;
+
+  if (!id) {
+    return res.status(400).send({ message: "Mohon lengkapi id Agenda nya" });
+  }
+
+  if (!idUser) {
+    return res.status(400).send({ message: "Mohon lengkapi id User nya" });
+  }
+  try {
+    // check status berkas
+    const agenda = await prisma.agenda.findFirst({
+      where: { id: id, status_berkas: true },
+    });
+
+    if (!agenda) {
+      return res
+        .status(400)
+        .send({ message: "Agenda tidak ditemukan atau belum diupload berkas" });
+    }
+
+    const form = await prisma.formAgenda.findFirst({
+      where: { agendaId: id, mhsId: idUser },
+      select: {
+        id: true,
+        agendaId: true,
+        gambar1: true,
+        gambar2: true,
+        gambar1_b64: true,
+        gambar2_b64: true,
+        status: true,
+        gps: true,
+        detail: true,
+        mahasiswa: true,
+      },
+    });
+
+    if (!form) {
+      return res
+        .status(400)
+        .send({ message: "Form tidak ditemukan atau belum diupload berkas" });
+    }
+    res.status(200).send({ message: "Form ditemukan", data: form });
+  } catch (error) {
+    console.log(error);
     res.status(500).send({ message: "Terjadi kesalahan server." });
   }
 };

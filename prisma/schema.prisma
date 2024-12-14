@@ -55,9 +55,9 @@ model Agenda {
   deskripsi  String?       @db.Text
   idUser     String?
   status     Boolean?     
+  status_berkas Boolean @default(false)
   nama       String
   createdAt DateTime @default(now())
-  status_berkas Boolean @default(false)
   group      GroupKegiatan @relation("AgendaGroups", fields: [groupId], references: [id])
   FormAgenda FormAgenda[]
 }
