@@ -270,8 +270,8 @@ export const checkStatusFormBerkas = async (req, res) => {
 
 export const getDetailForm = async (req, res) => {
   const {
-    idUser = "026446c7-8999-49cb-8bd5-526868b0e863",
-    id = "f602611b-d11c-46c9-85b9-a093555e6147",
+    idUser,
+    id,
   } = req.body;
 
   if (!id) {
